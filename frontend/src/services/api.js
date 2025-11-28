@@ -433,6 +433,11 @@ class ApiService {
   async disconnectGoogleDrive() {
     return this.request('/backups/google/disconnect', { method: 'POST' });
   }
+
+  // Config endpoint (public - no auth required)
+  async getConfig() {
+    return this.request('/config');
+  }
 }
 
 export const api = new ApiService();

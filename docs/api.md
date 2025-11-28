@@ -6,6 +6,15 @@ description: Complete API documentation for the Pool League backend
 
 # API Reference
 
+**This page is for developers.** If you're setting up a league, you don't need this - head to the [Get Started guide](get-started) instead.
+
+This documentation is for developers who want to:
+- Build custom integrations
+- Create their own frontend
+- Understand how the backend works
+
+---
+
 Complete API documentation for the Pool League backend.
 
 ## Base URL

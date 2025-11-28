@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ConfigProvider } from './context/ConfigContext';
 
 // Pages
 import LoginPage from './pages/LoginPage';
@@ -108,9 +109,11 @@ function AppRoutes() {
 export default function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <AppRoutes />
-      </AuthProvider>
+      <ConfigProvider>
+        <AuthProvider>
+          <AppRoutes />
+        </AuthProvider>
+      </ConfigProvider>
     </BrowserRouter>
   );
 }

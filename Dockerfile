@@ -5,11 +5,11 @@ WORKDIR /app
 # Install OpenSSL for Prisma compatibility on Alpine
 RUN apk add --no-cache openssl
 
-# Install dependencies
+# Install dependencies (include dev for prisma CLI used in DB init)
 COPY backend/package*.json ./
-RUN npm install --omit=dev
+RUN npm install
 
-# Copy prisma schema
+# Copy prisma schema and seed
 COPY backend/prisma ./prisma/
 
 # Generate Prisma client
@@ -21,5 +21,5 @@ COPY backend/src ./src/
 # Expose port
 EXPOSE 3001
 
-# Start command
-CMD ["sh", "-c", "npx prisma migrate deploy && npm start"]
+# Start command - app handles DB initialization internally
+CMD ["npm", "start"]

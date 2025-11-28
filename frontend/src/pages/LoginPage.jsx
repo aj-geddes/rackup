@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useConfig } from '../context/ConfigContext';
 
 export default function LoginPage() {
   const { login, error } = useAuth();
+  const { config } = useConfig();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -28,7 +30,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="text-6xl mb-4">🎱</div>
-          <h1 className="text-3xl font-bold text-white">Pool League</h1>
+          <h1 className="text-3xl font-bold text-white">{config.league.name}</h1>
           <p className="text-white/80 mt-2">Sign in to your account</p>
         </div>
 

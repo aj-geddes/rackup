@@ -3,7 +3,8 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
-const { PrismaClient } = require('@prisma/client');
+
+const { initializeDatabase, prisma } = require('./db/init');
 
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
@@ -16,11 +17,11 @@ const backupRoutes = require('./routes/backups');
 const adminRoutes = require('./routes/admin');
 const venueRoutes = require('./routes/venues');
 const inviteRoutes = require('./routes/invites');
+const configRoutes = require('./routes/config');
 
 const errorHandler = require('./middleware/errorHandler');
 const { requestLogger } = require('./middleware/logger');
 
-const prisma = new PrismaClient();
 const app = express();
 
 // Trust proxy for Railway deployment
@@ -83,6 +84,7 @@ app.use('/api/backups', backupRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/venues', venueRoutes);
 app.use('/api/invites', inviteRoutes);
+app.use('/api/config', configRoutes);
 
 // Error handling
 app.use(errorHandler);
@@ -109,8 +111,8 @@ const PORT = process.env.PORT || 3001;
 
 async function main() {
   try {
-    await prisma.$connect();
-    console.log('Connected to database');
+    // Initialize database: check connection, create tables if needed, seed if empty
+    await initializeDatabase();
 
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);

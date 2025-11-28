@@ -1,202 +1,254 @@
 ---
 layout: default
-title: Configuration Guide
-description: Complete reference for all environment variables and configuration options
+title: Settings Reference
+description: Complete reference for all settings and options. Most users won't need this.
 ---
 
-# Configuration Guide
+# Settings Reference
 
-Complete reference for all environment variables and configuration options.
+**Most users don't need this page.** The [Get Started guide](get-started) covers everything you need for a standard setup.
 
-## Backend Environment Variables
+This page is for:
+- Troubleshooting when something isn't working
+- Understanding what each setting does
+- Advanced customization
 
-### Required Variables
+---
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `DATABASE_URL` | PostgreSQL connection string | `postgresql://user:pass@host:5432/db` |
-| `JWT_SECRET` | Secret for signing access tokens | 64+ character random string |
-| `JWT_REFRESH_SECRET` | Secret for signing refresh tokens | 64+ character random string |
-| `FRONTEND_URL` | Frontend URL for CORS | `https://your-app.railway.app` |
+## Quick Reference
 
-### Optional Variables
+All settings are configured as environment variables in Railway.
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `PORT` | `3001` | Server port |
-| `NODE_ENV` | `development` | Environment mode |
-| `JWT_EXPIRES_IN` | `15m` | Access token lifetime |
-| `JWT_REFRESH_EXPIRES_IN` | `7d` | Refresh token lifetime |
-| `RATE_LIMIT_WINDOW_MS` | `900000` | Rate limit window (15 min) |
-| `RATE_LIMIT_MAX_REQUESTS` | `100` | Max requests per window |
+| Category | Settings |
+|----------|----------|
+| [Required](#required-settings) | DATABASE_URL, JWT_SECRET, JWT_REFRESH_SECRET, FRONTEND_URL, NODE_ENV |
+| [League Info](#league-information) | LEAGUE_NAME, LEAGUE_SHORT_NAME, LEAGUE_DESCRIPTION, etc. |
+| [Admin Account](#admin-account) | ADMIN_EMAIL, ADMIN_PASSWORD |
+| [Text Messages](#text-messages-twilio) | TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_FROM_NUMBER |
+| [Cloud Backups](#cloud-backups-google-drive) | GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI |
+| [Advanced](#advanced-settings) | JWT expiry, rate limiting |
 
-### Initial Admin Setup
+---
 
-| Variable | Description |
-|----------|-------------|
-| `ADMIN_EMAIL` | Email for initial admin account |
-| `ADMIN_PASSWORD` | Password for initial admin (change after first login!) |
+## Required Settings
 
-### Twilio SMS Configuration
+These must be set for the app to work.
 
-| Variable | Description |
-|----------|-------------|
-| `TWILIO_ACCOUNT_SID` | Twilio Account SID |
-| `TWILIO_AUTH_TOKEN` | Twilio Auth Token |
-| `TWILIO_FROM_NUMBER` | Twilio phone number (e.g., `+15551234567`) |
+### DATABASE_URL
 
-### Google Drive Configuration
+**What it is:** The connection string to your PostgreSQL database.
 
-| Variable | Description |
-|----------|-------------|
-| `GOOGLE_CLIENT_ID` | OAuth 2.0 Client ID |
-| `GOOGLE_CLIENT_SECRET` | OAuth 2.0 Client Secret |
-| `GOOGLE_REDIRECT_URI` | OAuth callback URL |
+**How to set it:** In Railway, use "Add Reference" to connect to your PostgreSQL service. Don't type this manually.
 
-## Frontend Environment Variables
+**Example:** `postgresql://user:password@host:5432/database?schema=public`
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `VITE_API_URL` | Backend API URL | `https://api.example.com/api` |
+### JWT_SECRET
 
-## Database Configuration
+**What it is:** A secret key used to create secure login sessions.
 
-### PostgreSQL Requirements
+**How to set it:** Generate a random string at [randomkeygen.com](https://randomkeygen.com/) (use a "CodeIgniter Encryption Key").
 
-- PostgreSQL 14 or higher
-- UTF-8 encoding
-- SSL recommended for production
+**Important:** Must be different from JWT_REFRESH_SECRET.
 
-### Connection String Format
+### JWT_REFRESH_SECRET
 
-```
-postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=public
-```
+**What it is:** A second secret key for long-term login sessions.
 
-For Railway, use the auto-generated `DATABASE_URL` from the PostgreSQL service.
+**How to set it:** Generate another random string (different from JWT_SECRET).
 
-## Security Configuration
+### FRONTEND_URL
 
-### JWT Token Lifetimes
+**What it is:** Your app's URL, used for security settings.
 
-Recommended settings for production:
+**How to set it:** Copy your Railway URL exactly, including `https://`.
 
-| Token Type | Lifetime | Purpose |
-|------------|----------|---------|
-| Access Token | 15 minutes | Short-lived for API calls |
-| Refresh Token | 7 days | Used to get new access tokens |
+**Example:** `https://my-league-production.up.railway.app`
 
-Shorter access token lifetimes are more secure but require more frequent refreshes.
+### NODE_ENV
 
-### Rate Limiting
+**What it is:** Tells the app to run in production mode.
 
-The API uses rate limiting to prevent abuse:
+**How to set it:** Always set to `production` for Railway deployments.
 
-| Endpoint | Window | Max Requests |
-|----------|--------|--------------|
-| All `/api/*` | 15 min | 100 |
-| `/api/auth/login` | 15 min | 10 |
-| `/api/auth/accept-invite` | 15 min | 10 |
+---
 
-### Password Requirements
+## League Information
 
-User passwords must:
-- Be at least 8 characters
-- Contain at least one lowercase letter
-- Contain at least one uppercase letter
-- Contain at least one number
+These customize how your league appears.
 
-### CORS Configuration
+| Setting | What it does | Example |
+|---------|--------------|---------|
+| `LEAGUE_NAME` | Full name shown on login screen and titles | `Kansas City Women's Pool League` |
+| `LEAGUE_SHORT_NAME` | Abbreviation for mobile headers | `KCWPL` |
+| `LEAGUE_DESCRIPTION` | Tagline shown on home page | `The premier women's pool league in KC` |
+| `LEAGUE_LOCATION` | City/region | `Kansas City, MO` |
+| `LEAGUE_CONTACT_EMAIL` | Contact email (optional) | `info@kcwpl.com` |
+| `LEAGUE_CONTACT_PHONE` | Contact phone (optional) | `+1-555-123-4567` |
+| `LEAGUE_WEBSITE` | External website link (optional) | `https://kcwpl.com` |
+| `LEAGUE_RULES_URL` | Link to rules document (optional) | `https://kcwpl.com/rules` |
 
-The backend only accepts requests from the URL specified in `FRONTEND_URL`. Multiple origins are not supported by default.
+All league info settings have defaults if not specified.
 
-## User Roles
+---
 
-| Role | Level | Description |
-|------|-------|-------------|
-| `PLAYER` | 1 | Basic player account |
-| `CAPTAIN` | 2 | Team captain with roster management |
-| `LEAGUE_OFFICIAL` | 3 | Can manage teams, schedules, announcements |
-| `ADMIN` | 4 | Full system access |
+## Admin Account
 
-### Role Permissions
+These create your initial administrator account.
 
-| Action | Player | Captain | Official | Admin |
-|--------|--------|---------|----------|-------|
-| View standings | ✓ | ✓ | ✓ | ✓ |
-| View schedule | ✓ | ✓ | ✓ | ✓ |
-| View team | ✓ | ✓ | ✓ | ✓ |
-| Edit own profile | ✓ | ✓ | ✓ | ✓ |
-| Add team members | | ✓ | ✓ | ✓ |
-| Enter match scores | | ✓ | ✓ | ✓ |
-| Send invites | | ✓* | ✓ | ✓ |
-| Create teams | | | ✓ | ✓ |
-| Create seasons | | | ✓ | ✓ |
-| Create announcements | | | ✓ | ✓ |
-| Manage backups | | | ✓ | ✓ |
-| Manage users | | | | ✓ |
-| Change user roles | | | | ✓ |
-| Reset passwords | | | | ✓ |
+### ADMIN_EMAIL
 
-*Captains can only invite to their own team
+**What it is:** Email address for the first admin account.
 
-## Backup Configuration
+**Important:** This is the email you'll use to log in. Make sure you have access to it.
 
-### Local Backups
+### ADMIN_PASSWORD
 
-Local backups are always available. They download as:
-- **Full Backup**: JSON file with all data
-- **Standings CSV**: Current team standings
-- **Player Stats CSV**: Player statistics
+**What it is:** Initial password for the admin account.
 
-### Google Drive Backups
+**Important:**
+- Use a strong password (8+ characters, mix of letters/numbers)
+- Change this password after your first login
+- Don't use simple passwords like "password123"
 
-To enable Google Drive:
+---
 
-1. Create a Google Cloud project
-2. Enable the Drive API
-3. Create OAuth 2.0 credentials
-4. Set the correct redirect URI
-5. Configure environment variables
-6. Connect via Admin → Backups
+## Text Messages (Twilio)
 
-Backups are stored in a single folder (configurable in the admin panel).
+These settings enable automatic SMS invites. See the [full Twilio setup guide](twilio-setup) for instructions.
 
-## Handicap System
+| Setting | What it is |
+|---------|------------|
+| `TWILIO_ACCOUNT_SID` | Your Account SID from Twilio (starts with "AC") |
+| `TWILIO_AUTH_TOKEN` | Your Auth Token from Twilio |
+| `TWILIO_FROM_NUMBER` | Your Twilio phone number (format: `+15551234567`) |
 
-Players have a handicap from 1-9:
+**If not set:** Invite links will appear in the admin panel for manual sharing instead of being texted.
 
-| Handicap | Skill Level |
-|----------|-------------|
-| 1-2 | Beginner |
-| 3-4 | Intermediate |
-| 5-6 | Advanced |
-| 7-8 | Expert |
-| 9 | Professional |
+---
 
-Captains and admins can adjust player handicaps as needed.
+## Cloud Backups (Google Drive)
 
-## Season Configuration
+These settings enable automatic backups to Google Drive. See the [full Google Drive setup guide](google-drive-setup) for instructions.
 
-A season includes:
-- Name (e.g., "Fall 2024 Season")
-- Start date
-- End date
-- Playoff date (optional)
-- Active status (only one season active at a time)
+| Setting | What it is |
+|---------|------------|
+| `GOOGLE_CLIENT_ID` | Your OAuth Client ID (ends with `.apps.googleusercontent.com`) |
+| `GOOGLE_CLIENT_SECRET` | Your OAuth Client Secret |
+| `GOOGLE_REDIRECT_URI` | Must be exactly `https://YOUR-APP.railway.app/admin/backups` |
 
-The system automatically tracks:
-- Week number
-- Season progress percentage
-- Playoff qualification
+**If not set:** You can still download backups manually from the admin panel.
 
-## Venue Management
+---
 
-Venues can include:
-- Name
-- Address
-- City
-- Phone number
-- Active/inactive status
+## Advanced Settings
 
-Inactive venues are hidden from match scheduling.
+These have sensible defaults. Only change them if you have a specific reason.
+
+### JWT_EXPIRES_IN
+
+**Default:** `15m` (15 minutes)
+
+**What it does:** How long a login session lasts before requiring re-authentication.
+
+**Why you might change it:**
+- Shorter = more secure, but users log in more often
+- Longer = more convenient, but sessions stay active longer
+
+### JWT_REFRESH_EXPIRES_IN
+
+**Default:** `7d` (7 days)
+
+**What it does:** How long before a user must fully log in again (vs. automatic session refresh).
+
+### RATE_LIMIT_WINDOW_MS
+
+**Default:** `900000` (15 minutes in milliseconds)
+
+**What it does:** Time window for rate limiting.
+
+### RATE_LIMIT_MAX_REQUESTS
+
+**Default:** `100`
+
+**What it does:** Maximum requests per window. Prevents abuse.
+
+### PORT
+
+**Default:** `3001`
+
+**What it does:** Which port the server listens on.
+
+**Note:** Railway sets this automatically. Don't change it unless you know what you're doing.
+
+---
+
+## User Roles Explained
+
+Rackup has four permission levels:
+
+| Role | What they can do |
+|------|------------------|
+| **Player** | View standings, schedule, their team, their own profile |
+| **Captain** | Everything a Player can do, plus manage their team's roster and enter scores |
+| **League Official** | Everything a Captain can do, plus manage all teams, create seasons, post announcements |
+| **Admin** | Everything, including managing users and resetting passwords |
+
+### Changing Roles
+
+Admins can change user roles:
+1. Go to Admin → Users
+2. Click on a user
+3. Change their role
+4. Save
+
+Be careful with Admin access - they can do anything in the system.
+
+---
+
+## Troubleshooting Common Issues
+
+### "Database connection failed"
+
+- Check that DATABASE_URL is set via "Add Reference" to your PostgreSQL service
+- Make sure your PostgreSQL service is running (check for a green dot in Railway)
+- Try redeploying
+
+### "Invalid token" errors
+
+- Your JWT_SECRET or JWT_REFRESH_SECRET might have been changed
+- Users will need to log in again
+- If the problem persists, generate new secrets
+
+### "CORS error" in browser
+
+- FRONTEND_URL doesn't match your actual URL
+- Check for missing `https://` or trailing slashes
+- Must match exactly
+
+### "Redirect URI mismatch" (Google Drive)
+
+- GOOGLE_REDIRECT_URI doesn't exactly match what's in Google Cloud Console
+- Check for trailing slashes
+- Both must be exactly the same
+
+### App is slow to start
+
+- Railway "sleeps" apps that haven't been used recently
+- First request wakes it up (can take 10-30 seconds)
+- Subsequent requests are fast
+- This is normal for Hobby plan
+
+---
+
+## Getting Help
+
+If something isn't working:
+
+1. **Check the logs** - In Railway, click your app and view logs
+2. **Review this page** - Make sure all required settings are present
+3. **Try redeploying** - Sometimes a fresh deploy fixes issues
+4. **Ask for help** - [Open an issue on GitHub](https://github.com/aj-geddes/rackup/issues)
+
+<div class="quick-links">
+  <a href="get-started">Back to Setup Guide</a>
+</div>
