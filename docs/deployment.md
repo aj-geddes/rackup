@@ -1,6 +1,7 @@
 ---
 layout: default
 title: Deployment Guide
+description: Step-by-step guide to deploying Pool League Management on Railway
 ---
 
 # Deploying to Railway
