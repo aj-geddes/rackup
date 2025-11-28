@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="{{ site.lang | default: 'en-US' }}">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+{% seo %}
+    <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
+    {% include head-custom.html %}
+  </head>
+  <body>
+    <header class="page-header" role="banner">
+      <h1 class="project-name">{{ page.title | default: site.title }}</h1>
+      <h2 class="project-tagline">{{ page.description | default: site.description }}</h2>
+
+      <nav class="nav-container">
+        <ul class="nav-links">
+          <li><a href="{{ '/' | relative_url }}" {% if page.url == '/' or page.url == '/index.html' %}class="active"{% endif %}>Home</a></li>
+          <li><a href="{{ '/deployment' | relative_url }}" {% if page.url contains 'deployment' %}class="active"{% endif %}>Deployment</a></li>
+          <li><a href="{{ '/configuration' | relative_url }}" {% if page.url contains 'configuration' %}class="active"{% endif %}>Configuration</a></li>
+          <li><a href="{{ '/api' | relative_url }}" {% if page.url contains 'api' %}class="active"{% endif %}>API Reference</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main id="content" class="main-content" role="main">
+      {{ content }}
+
+      <footer class="site-footer">
+        <span class="site-footer-owner">Pool League Management</span> &mdash; Built with React, Node.js, and PostgreSQL
+        {% if site.github.is_project_page %}
+        <br><span class="site-footer-credits">Hosted on <a href="https://pages.github.com">GitHub Pages</a></span>
+        {% endif %}
+      </footer>
+    </main>
+  </body>
+</html>

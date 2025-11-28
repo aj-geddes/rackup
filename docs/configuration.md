@@ -1,6 +1,7 @@
 ---
 layout: default
 title: Configuration Guide
+description: Complete reference for all environment variables and configuration options
 ---
 
 # Configuration Guide

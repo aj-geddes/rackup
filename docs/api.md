@@ -1,6 +1,7 @@
 ---
 layout: default
 title: API Reference
+description: Complete API documentation for the Pool League backend
 ---
 
 # API Reference
