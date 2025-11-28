@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const path = require('path');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
@@ -27,9 +28,10 @@ const app = express();
 // Trust proxy for Railway deployment
 app.set('trust proxy', 1);
 
-// Security middleware
+// Security middleware - configured for serving frontend
 app.use(helmet({
-  crossOriginResourcePolicy: { policy: "cross-origin" }
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  contentSecurityPolicy: false // Disable CSP for React app compatibility
 }));
 
 // CORS configuration
@@ -86,12 +88,16 @@ app.use('/api/venues', venueRoutes);
 app.use('/api/invites', inviteRoutes);
 app.use('/api/config', configRoutes);
 
-// Error handling
-app.use(errorHandler);
+// Error handling for API routes
+app.use('/api', errorHandler);
 
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({ error: 'Endpoint not found' });
+// Serve static frontend files in production
+const publicPath = path.join(__dirname, '../public');
+app.use(express.static(publicPath));
+
+// For any non-API route, serve the React app (client-side routing)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(publicPath, 'index.html'));
 });
 
 // Graceful shutdown
