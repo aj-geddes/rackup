@@ -30,21 +30,27 @@
             </a>
           </li>
           <li>
-            <a href="{{ '/deployment' | relative_url }}"
-               {% if page.url contains 'deployment' %}class="active" aria-current="page"{% endif %}>
-              Deployment
+            <a href="{{ '/get-started' | relative_url }}"
+               {% if page.url contains 'get-started' %}class="active" aria-current="page"{% endif %}>
+              Get Started
+            </a>
+          </li>
+          <li>
+            <a href="{{ '/features' | relative_url }}"
+               {% if page.url contains 'features' %}class="active" aria-current="page"{% endif %}>
+              Features
             </a>
           </li>
           <li>
             <a href="{{ '/configuration' | relative_url }}"
                {% if page.url contains 'configuration' %}class="active" aria-current="page"{% endif %}>
-              Configuration
+              Settings
             </a>
           </li>
           <li>
             <a href="{{ '/api' | relative_url }}"
                {% if page.url contains 'api' %}class="active" aria-current="page"{% endif %}>
-              API Reference
+              API
             </a>
           </li>
         </ul>
