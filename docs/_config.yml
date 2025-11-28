@@ -2,15 +2,49 @@ title: Pool League Documentation
 description: Complete documentation for the Pool League Management Application - A full-stack pool/billiards league management system
 theme: jekyll-theme-cayman
 
+# Site URL (required for SEO and sitemap)
+url: "https://aj-geddes.github.io"
+baseurl: "/rackup"
+
 # GitHub Pages settings
 remote_theme: pages-themes/cayman@v0.2.0
 plugins:
   - jekyll-remote-theme
   - jekyll-seo-tag
+  - jekyll-sitemap
+  - jekyll-feed
 
 # Site settings
 lang: en-US
-baseurl: ""
+encoding: utf-8
+
+# Author information
+author:
+  name: AJ Geddes
+  url: https://github.com/aj-geddes
+
+# Social links for SEO
+social:
+  name: Pool League Management
+  links:
+    - https://github.com/aj-geddes/rackup
+
+# GitHub repository information
+repository: aj-geddes/rackup
+
+# Logo for SEO (JSON-LD structured data)
+logo: /assets/images/logo.png
+
+# Twitter card settings
+twitter:
+  card: summary
+
+# Open Graph settings
+og_image: /assets/images/og-image.png
+
+# SEO verification (add your verification codes here when available)
+# google_site_verification: your-google-verification-code
+# bing_site_verification: your-bing-verification-code
 
 # Build settings
 markdown: kramdown
@@ -23,12 +57,27 @@ kramdown:
     block:
       line_numbers: false
 
+# Feed settings
+feed:
+  path: feed.xml
+
 # Exclude from build
 exclude:
   - Gemfile
   - Gemfile.lock
   - README.md
   - LICENSE
+  - node_modules
+  - vendor
+  - .sass-cache
+  - .jekyll-cache
+
+# Include hidden files
+include:
+  - _pages
+
+# Timezone
+timezone: America/New_York
 
 # Default front matter
 defaults:
@@ -37,3 +86,4 @@ defaults:
       type: "pages"
     values:
       layout: "default"
+      image: /assets/images/og-image.png

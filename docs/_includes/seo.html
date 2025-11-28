@@ -1,0 +1,99 @@
+<!-- JSON-LD Structured Data for SEO -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "{{ site.title | escape }}",
+  "description": "{{ site.description | escape }}",
+  "url": "{{ site.url }}{{ site.baseurl }}/",
+  "author": {
+    "@type": "Person",
+    "name": "{{ site.author.name | escape }}",
+    "url": "{{ site.author.url }}"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "{{ site.title | escape }}",
+    "url": "{{ site.url }}{{ site.baseurl }}/"
+  },
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "{{ site.url }}{{ site.baseurl }}/?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+
+<!-- Page-specific structured data -->
+{% if page.layout == 'default' %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "{{ page.title | default: site.title | escape }}",
+  "description": "{{ page.description | default: site.description | escape }}",
+  "url": "{{ site.url }}{{ site.baseurl }}{{ page.url }}",
+  "datePublished": "{{ site.time | date_to_xmlschema }}",
+  "dateModified": "{{ site.time | date_to_xmlschema }}",
+  "author": {
+    "@type": "Person",
+    "name": "{{ site.author.name | escape }}",
+    "url": "{{ site.author.url }}"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "{{ site.title | escape }}"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ site.url }}{{ site.baseurl }}{{ page.url }}"
+  }
+}
+</script>
+{% endif %}
+
+<!-- Software Application structured data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Pool League Management",
+  "description": "A full-stack pool/billiards league management system built with React, Node.js, and PostgreSQL",
+  "url": "{{ site.url }}{{ site.baseurl }}/",
+  "applicationCategory": "Sports Management Software",
+  "operatingSystem": "Web",
+  "author": {
+    "@type": "Person",
+    "name": "{{ site.author.name | escape }}"
+  },
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+</script>
+
+<!-- Breadcrumb structured data -->
+{% if page.url != '/' %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "{{ site.url }}{{ site.baseurl }}/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "{{ page.title | escape }}",
+      "item": "{{ site.url }}{{ site.baseurl }}{{ page.url }}"
+    }
+  ]
+}
+</script>
+{% endif %}
