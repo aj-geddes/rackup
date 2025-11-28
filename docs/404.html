@@ -1,0 +1,121 @@
+---
+layout: default
+title: Page Not Found
+description: The page you're looking for doesn't exist
+permalink: /404.html
+sitemap: false
+---
+
+<div class="error-page">
+  <h1>404</h1>
+  <h2>Page Not Found</h2>
+  <p>Sorry, the page you're looking for doesn't exist or has been moved.</p>
+
+  <div class="error-actions">
+    <a href="{{ '/' | relative_url }}" class="btn-primary">Go to Homepage</a>
+    <a href="{{ '/api' | relative_url }}" class="btn-secondary">View API Docs</a>
+  </div>
+
+  <div class="helpful-links">
+    <h3>Helpful Links</h3>
+    <ul>
+      <li><a href="{{ '/' | relative_url }}">Home</a> - Overview of Pool League Management</li>
+      <li><a href="{{ '/deployment' | relative_url }}">Deployment Guide</a> - How to deploy the application</li>
+      <li><a href="{{ '/configuration' | relative_url }}">Configuration</a> - Environment variables and settings</li>
+      <li><a href="{{ '/api' | relative_url }}">API Reference</a> - Complete API documentation</li>
+    </ul>
+  </div>
+</div>
+
+<style>
+.error-page {
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.error-page h1 {
+  font-size: 6rem;
+  margin: 0;
+  color: #1a5f2a;
+  border-bottom: none;
+  line-height: 1;
+}
+
+.error-page h2 {
+  font-size: 1.75rem;
+  margin-top: 0.5rem;
+  border-bottom: none;
+}
+
+.error-page > p {
+  font-size: 1.1rem;
+  color: #64748b;
+  margin-bottom: 2rem;
+}
+
+.error-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 3rem;
+}
+
+.error-actions a {
+  display: inline-block;
+  padding: 0.875rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background: #1a5f2a;
+  color: #fff !important;
+  border-bottom: none !important;
+}
+
+.btn-primary:hover {
+  background: #134620;
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: #f1f5f9;
+  color: #1a5f2a !important;
+  border: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+.btn-secondary:hover {
+  background: #e2e8f0;
+}
+
+.helpful-links {
+  text-align: left;
+  max-width: 500px;
+  margin: 0 auto;
+  background: #f8fafc;
+  padding: 1.5rem 2rem;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.helpful-links h3 {
+  margin-top: 0;
+  color: #1e293b;
+}
+
+.helpful-links ul {
+  margin-bottom: 0;
+}
+
+.helpful-links li {
+  margin-bottom: 0.75rem;
+}
+
+.helpful-links li:last-child {
+  margin-bottom: 0;
+}
+</style>
