@@ -11,13 +11,13 @@ RUN npm install
 COPY frontend/ ./
 RUN npm run build
 
-# Production stage
-FROM node:20-alpine
+# Production stage - use slim (Debian) instead of Alpine for Prisma compatibility
+FROM node:20-slim
 
 WORKDIR /app
 
-# Install OpenSSL for Prisma compatibility on Alpine
-RUN apk add --no-cache openssl
+# Install OpenSSL for Prisma (required on Debian slim)
+RUN apt-get update && apt-get install -y openssl ca-certificates && rm -rf /var/lib/apt/lists/*
 
 # Install backend dependencies (include dev for prisma CLI used in DB init)
 COPY backend/package*.json ./
