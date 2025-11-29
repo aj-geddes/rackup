@@ -177,6 +177,10 @@ class ApiService {
     return this.request(`/users/${id}/activate`, { method: 'PATCH' });
   }
 
+  async deleteUser(id) {
+    return this.request(`/users/${id}`, { method: 'DELETE' });
+  }
+
   // Team endpoints
   async getTeams(seasonId) {
     const query = seasonId ? `?seasonId=${seasonId}` : '';

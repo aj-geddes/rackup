@@ -612,6 +612,7 @@ function Users() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(null);
   const [formData, setFormData] = useState({
     email: '', password: '', firstName: '', lastName: '',
     role: 'PLAYER', teamId: '', handicap: ''
@@ -706,6 +707,18 @@ function Users() {
     let pass = '';
     for (let i = 0; i < 10; i++) pass += chars.charAt(Math.floor(Math.random() * chars.length));
     return pass + '!1';
+  };
+
+  const handleDelete = async () => {
+    try {
+      await api.deleteUser(showDeleteModal.id);
+      setMessage(`User ${showDeleteModal.firstName} ${showDeleteModal.lastName} deleted`);
+      setShowDeleteModal(null);
+      loadData();
+    } catch (err) {
+      setError(err.message);
+      setShowDeleteModal(null);
+    }
   };
 
   const filteredUsers = users.filter(u => {
@@ -834,6 +847,24 @@ function Users() {
         </div>
       )}
 
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl p-6 w-full max-w-sm space-y-4">
+            <h3 className="font-semibold text-gray-800">Delete User</h3>
+            <p className="text-gray-600">
+              Are you sure you want to permanently delete <strong>{showDeleteModal.firstName} {showDeleteModal.lastName}</strong>?
+              This action cannot be undone.
+            </p>
+            <div className="flex gap-3">
+              <button onClick={handleDelete} className="flex-1 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">Delete</button>
+              <button onClick={() => setShowDeleteModal(null)}
+                className="px-4 py-2 border border-gray-300 rounded-lg">Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* User List */}
       <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
         <div className="overflow-x-auto">
@@ -869,9 +900,11 @@ function Users() {
                       {user.isActive ? 'Active' : 'Inactive'}
                     </button>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 space-x-2">
                     <button onClick={() => setShowPasswordModal(user.id)}
                       className="text-purple-600 hover:underline text-xs">Reset Password</button>
+                    <button onClick={() => setShowDeleteModal(user)}
+                      className="text-red-600 hover:underline text-xs">Delete</button>
                   </td>
                 </tr>
               ))}

@@ -244,6 +244,47 @@ router.patch('/:id/activate', authenticate, authorize('ADMIN'), validations.uuid
   }
 });
 
+// Delete user (admin only)
+router.delete('/:id', authenticate, authorize('ADMIN'), validations.uuidParam('id'), validate, async (req, res, next) => {
+  try {
+    const userId = req.params.id;
+
+    // Prevent deleting yourself
+    if (userId === req.user.id) {
+      return res.status(400).json({ error: 'Cannot delete your own account' });
+    }
+
+    // Check if user exists
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Delete related records first
+    await prisma.refreshToken.deleteMany({ where: { userId } });
+    await prisma.playerStats.deleteMany({ where: { playerId: userId } });
+
+    // Remove as captain/co-captain from teams
+    await prisma.team.updateMany({
+      where: { captainId: userId },
+      data: { captainId: null }
+    });
+    await prisma.team.updateMany({
+      where: { coCaptainId: userId },
+      data: { coCaptainId: null }
+    });
+
+    // Delete the user
+    await prisma.user.delete({ where: { id: userId } });
+
+    await createAuditLog(req.user.id, 'USER_DELETED', 'User', userId, { email: user.email }, getClientIp(req));
+
+    res.json({ message: 'User deleted successfully' });
+  } catch (error) {
+    next(error);
+  }
+});
+
 // Get player rankings
 router.get('/rankings/:seasonId', authenticate, async (req, res, next) => {
   try {
