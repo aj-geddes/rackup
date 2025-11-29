@@ -159,16 +159,20 @@ router.post('/create-user', authorize('ADMIN'), async (req, res, next) => {
     // Hash password
     const passwordHash = await bcrypt.hash(password, 12);
 
+    const userData = {
+      email,
+      passwordHash,
+      firstName,
+      lastName,
+      role,
+    };
+    if (teamId) userData.teamId = teamId;
+    if (handicap !== undefined && handicap !== '' && handicap !== null) {
+      userData.handicap = parseInt(handicap);
+    }
+
     const user = await prisma.user.create({
-      data: {
-        email,
-        passwordHash,
-        firstName,
-        lastName,
-        role,
-        teamId: teamId || null,
-        handicap: handicap !== undefined ? parseInt(handicap) : null
-      },
+      data: userData,
       select: {
         id: true,
         email: true,

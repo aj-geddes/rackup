@@ -925,11 +925,17 @@ function Teams() {
     setSubmitting(true);
     setError('');
     try {
+      const data = {
+        name: formData.name,
+        seasonId: formData.seasonId,
+        captainId: formData.captainId || undefined,
+        coCaptainId: formData.coCaptainId || undefined,
+      };
       if (editingTeam) {
-        await api.updateTeam(editingTeam.id, formData);
+        await api.updateTeam(editingTeam.id, data);
         setMessage('Team updated');
       } else {
-        await api.createTeam(formData);
+        await api.createTeam(data);
         setMessage('Team created');
       }
       setFormData({ name: '', captainId: '', coCaptainId: '', seasonId: formData.seasonId });
@@ -1054,7 +1060,16 @@ function Seasons() {
   const [seasons, setSeasons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [formData, setFormData] = useState({ name: '', startDate: '', endDate: '', playoffDate: '' });
+  const getNextSeasonName = () => {
+    const now = new Date();
+    const month = now.getMonth();
+    const year = now.getFullYear();
+    if (month >= 2 && month <= 4) return `Spring ${year}`;
+    if (month >= 5 && month <= 7) return `Summer ${year}`;
+    if (month >= 8 && month <= 10) return `Fall ${year}`;
+    return `Winter ${year + 1}`;
+  };
+  const [formData, setFormData] = useState({ name: getNextSeasonName(), startDate: '', endDate: '', playoffDate: '' });
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -1079,7 +1094,7 @@ function Seasons() {
     try {
       await api.createSeason(formData);
       setMessage('Season created');
-      setFormData({ name: '', startDate: '', endDate: '', playoffDate: '' });
+      setFormData({ name: getNextSeasonName(), startDate: '', endDate: '', playoffDate: '' });
       setShowForm(false);
       loadData();
     } catch (err) {
@@ -1119,7 +1134,7 @@ function Seasons() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Season Name *</label>
             <input type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Spring 2025" required />
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg" required />
           </div>
           <div className="grid grid-cols-3 gap-4">
             <div>
@@ -1208,11 +1223,17 @@ function Venues() {
     setSubmitting(true);
     setError('');
     try {
+      const data = {
+        name: formData.name,
+        address: formData.address || undefined,
+        city: formData.city || undefined,
+        phone: formData.phone || undefined,
+      };
       if (editingVenue) {
-        await api.updateVenue(editingVenue.id, formData);
+        await api.updateVenue(editingVenue.id, data);
         setMessage('Venue updated');
       } else {
-        await api.createVenue(formData);
+        await api.createVenue(data);
         setMessage('Venue created');
       }
       setFormData({ name: '', address: '', city: '', phone: '' });
