@@ -92,8 +92,8 @@ const validations = {
       .isLength({ min: 2, max: 50 })
       .withMessage('Team name must be 2-50 characters'),
     body('seasonId')
-      .isUUID()
-      .withMessage('Valid season ID is required')
+      .notEmpty()
+      .withMessage('Season ID is required')
   ],
 
   updateTeam: [
@@ -121,14 +121,14 @@ const validations = {
       .matches(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]( (AM|PM))?$/i)
       .withMessage('Valid time is required (e.g., 7:00 PM)'),
     body('homeTeamId')
-      .isUUID()
-      .withMessage('Valid home team ID is required'),
+      .notEmpty()
+      .withMessage('Home team ID is required'),
     body('awayTeamId')
-      .isUUID()
-      .withMessage('Valid away team ID is required'),
+      .notEmpty()
+      .withMessage('Away team ID is required'),
     body('seasonId')
-      .isUUID()
-      .withMessage('Valid season ID is required'),
+      .notEmpty()
+      .withMessage('Season ID is required'),
     body('week')
       .isInt({ min: 1 })
       .withMessage('Week number must be a positive integer')
@@ -200,11 +200,11 @@ const validations = {
       .withMessage('Invalid phone number format')
   ],
 
-  // Common param validations
+  // Common param validations (accepts any non-empty string ID, not just UUIDs, for seed compatibility)
   uuidParam: (paramName = 'id') => [
     param(paramName)
-      .isUUID()
-      .withMessage(`Valid ${paramName} is required`)
+      .notEmpty()
+      .withMessage(`${paramName} is required`)
   ],
 
   // Pagination
