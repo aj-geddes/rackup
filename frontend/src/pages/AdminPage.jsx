@@ -1153,6 +1153,17 @@ function Seasons() {
     }
   };
 
+  const handleDelete = async (season) => {
+    if (!confirm(`Delete "${season.name}"? This will also delete all teams and matches in this season.`)) return;
+    try {
+      await api.deleteSeason(season.id);
+      setMessage('Season deleted');
+      loadData();
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
   if (loading) return <LoadingSpinner />;
 
   return (
@@ -1219,12 +1230,20 @@ function Seasons() {
                   {season._count?.teams || 0} teams | {season._count?.matches || 0} matches
                 </p>
               </div>
-              {!season.isActive && (
-                <button onClick={() => handleActivate(season.id)}
-                  className="px-3 py-1 bg-purple-600 text-white text-sm rounded-lg hover:bg-purple-700">
-                  Activate
-                </button>
-              )}
+              <div className="flex gap-2">
+                {!season.isActive && (
+                  <button onClick={() => handleActivate(season.id)}
+                    className="px-3 py-1 bg-purple-600 text-white text-sm rounded-lg hover:bg-purple-700">
+                    Activate
+                  </button>
+                )}
+                {!season.isActive && (
+                  <button onClick={() => handleDelete(season)}
+                    className="px-3 py-1 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700">
+                    Delete
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         ))}
@@ -1301,6 +1320,17 @@ function Venues() {
     }
   };
 
+  const handleDelete = async (venue) => {
+    if (!confirm(`Delete "${venue.name}"?`)) return;
+    try {
+      await api.deleteVenue(venue.id);
+      setMessage('Venue deleted');
+      loadData();
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
   if (loading) return <LoadingSpinner />;
 
   return (
@@ -1365,6 +1395,7 @@ function Venues() {
                 {venue.isActive ? 'Active' : 'Inactive'}
               </button>
               <button onClick={() => handleEdit(venue)} className="text-purple-600 hover:underline text-sm">Edit</button>
+              <button onClick={() => handleDelete(venue)} className="text-red-600 hover:underline text-sm">Delete</button>
             </div>
           </div>
         ))}

@@ -109,22 +109,19 @@ router.patch('/:id', authenticate, authorize('ADMIN', 'LEAGUE_OFFICIAL'), async 
 // Delete venue (admin only)
 router.delete('/:id', authenticate, authorize('ADMIN'), validations.uuidParam('id'), validate, async (req, res, next) => {
   try {
-    // Check if venue has matches
-    const matchCount = await prisma.match.count({
-      where: { venueId: req.params.id }
-    });
+    const venueId = req.params.id;
 
-    if (matchCount > 0) {
-      return res.status(400).json({
-        error: 'Cannot delete venue with scheduled matches. Deactivate it instead or reassign matches.'
-      });
-    }
+    // Remove venue reference from any matches
+    await prisma.match.updateMany({
+      where: { venueId },
+      data: { venueId: null }
+    });
 
     await prisma.venue.delete({
-      where: { id: req.params.id }
+      where: { id: venueId }
     });
 
-    await createAuditLog(req.user.id, 'VENUE_DELETED', 'Venue', req.params.id, null, getClientIp(req));
+    await createAuditLog(req.user.id, 'VENUE_DELETED', 'Venue', venueId, null, getClientIp(req));
 
     res.json({ message: 'Venue deleted successfully' });
   } catch (error) {

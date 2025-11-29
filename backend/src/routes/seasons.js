@@ -195,24 +195,60 @@ router.post('/:id/deactivate', authenticate, authorize('ADMIN', 'LEAGUE_OFFICIAL
 // Delete season (admin only)
 router.delete('/:id', authenticate, authorize('ADMIN'), validations.uuidParam('id'), validate, async (req, res, next) => {
   try {
+    const seasonId = req.params.id;
+
+    // Check if this is the active season
     const season = await prisma.season.findUnique({
-      where: { id: req.params.id },
-      include: {
-        _count: { select: { matches: true, teams: true } }
-      }
+      where: { id: seasonId }
     });
 
-    if (season._count.matches > 0 || season._count.teams > 0) {
-      return res.status(400).json({
-        error: 'Cannot delete season with existing matches or teams. Remove them first.'
+    if (!season) {
+      return res.status(404).json({ error: 'Season not found' });
+    }
+
+    if (season.isActive) {
+      return res.status(400).json({ error: 'Cannot delete active season. Activate another season first.' });
+    }
+
+    // Delete all matches for this season
+    await prisma.match.deleteMany({
+      where: { seasonId }
+    });
+
+    // Delete standings for this season
+    await prisma.standing.deleteMany({
+      where: { seasonId }
+    });
+
+    // Delete player stats for this season
+    await prisma.playerStats.deleteMany({
+      where: { seasonId }
+    });
+
+    // Get teams in this season and remove team references from users
+    const teams = await prisma.team.findMany({
+      where: { seasonId },
+      select: { id: true }
+    });
+
+    for (const team of teams) {
+      await prisma.user.updateMany({
+        where: { teamId: team.id },
+        data: { teamId: null }
       });
     }
 
-    await prisma.season.delete({
-      where: { id: req.params.id }
+    // Delete teams for this season
+    await prisma.team.deleteMany({
+      where: { seasonId }
     });
 
-    await createAuditLog(req.user.id, 'SEASON_DELETED', 'Season', req.params.id, null, getClientIp(req));
+    // Delete the season
+    await prisma.season.delete({
+      where: { id: seasonId }
+    });
+
+    await createAuditLog(req.user.id, 'SEASON_DELETED', 'Season', seasonId, null, getClientIp(req));
 
     res.json({ message: 'Season deleted successfully' });
   } catch (error) {
