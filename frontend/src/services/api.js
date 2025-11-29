@@ -365,6 +365,40 @@ class ApiService {
     });
   }
 
+  async createUser(data) {
+    return this.request('/admin/create-user', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteTeam(id) {
+    return this.request(`/teams/${id}`, { method: 'DELETE' });
+  }
+
+  async deactivateSeason(id) {
+    return this.request(`/seasons/${id}/deactivate`, { method: 'POST' });
+  }
+
+  async deleteSeason(id) {
+    return this.request(`/seasons/${id}`, { method: 'DELETE' });
+  }
+
+  async deleteVenue(id) {
+    return this.request(`/venues/${id}`, { method: 'DELETE' });
+  }
+
+  async deleteMatch(id) {
+    return this.request(`/matches/${id}`, { method: 'DELETE' });
+  }
+
+  async clearSchedule(seasonId) {
+    return this.request(`/admin/clear-schedule/${seasonId}`, {
+      method: 'DELETE',
+      body: JSON.stringify({ confirm: 'DELETE_ALL_MATCHES' }),
+    });
+  }
+
   async importUsers(users) {
     return this.request('/admin/import-users', {
       method: 'POST',

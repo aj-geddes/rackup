@@ -129,7 +129,81 @@ router.get('/audit-logs', authorize('ADMIN'), async (req, res, next) => {
   }
 });
 
-// Create admin user (admin only)
+// Create any user (admin only)
+router.post('/create-user', authorize('ADMIN'), async (req, res, next) => {
+  try {
+    const { email, password, firstName, lastName, role = 'PLAYER', teamId, handicap } = req.body;
+
+    if (!email || !password || !firstName || !lastName) {
+      return res.status(400).json({ error: 'Email, password, firstName, and lastName are required' });
+    }
+
+    if (!['PLAYER', 'CAPTAIN', 'LEAGUE_OFFICIAL', 'ADMIN'].includes(role)) {
+      return res.status(400).json({ error: 'Invalid role' });
+    }
+
+    // Check if user exists
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+    if (existingUser) {
+      return res.status(409).json({ error: 'Email already registered' });
+    }
+
+    // Verify team exists if provided
+    if (teamId) {
+      const team = await prisma.team.findUnique({ where: { id: teamId } });
+      if (!team) {
+        return res.status(404).json({ error: 'Team not found' });
+      }
+    }
+
+    // Hash password
+    const passwordHash = await bcrypt.hash(password, 12);
+
+    const user = await prisma.user.create({
+      data: {
+        email,
+        passwordHash,
+        firstName,
+        lastName,
+        role,
+        teamId: teamId || null,
+        handicap: handicap !== undefined ? parseInt(handicap) : null
+      },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        role: true,
+        handicap: true,
+        team: {
+          select: { id: true, name: true }
+        }
+      }
+    });
+
+    // Create player stats for active season if assigned to team
+    if (teamId) {
+      const activeSeason = await prisma.season.findFirst({ where: { isActive: true } });
+      if (activeSeason) {
+        await prisma.playerStats.create({
+          data: {
+            playerId: user.id,
+            seasonId: activeSeason.id
+          }
+        });
+      }
+    }
+
+    await createAuditLog(req.user.id, 'USER_CREATED', 'User', user.id, { email, role }, getClientIp(req));
+
+    res.status(201).json(user);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Create admin user (admin only) - legacy endpoint, use create-user instead
 router.post('/create-admin', authorize('ADMIN'), async (req, res, next) => {
   try {
     const { email, password, firstName, lastName, role } = req.body;
