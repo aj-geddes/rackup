@@ -1092,7 +1092,13 @@ function Seasons() {
     setSubmitting(true);
     setError('');
     try {
-      await api.createSeason(formData);
+      const data = {
+        name: formData.name,
+        startDate: formData.startDate,
+        endDate: formData.endDate,
+        playoffDate: formData.playoffDate || undefined,
+      };
+      await api.createSeason(data);
       setMessage('Season created');
       setFormData({ name: getNextSeasonName(), startDate: '', endDate: '', playoffDate: '' });
       setShowForm(false);
