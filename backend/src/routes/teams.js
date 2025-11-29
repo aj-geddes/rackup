@@ -311,17 +311,35 @@ router.delete('/:id/members/:userId', authenticate, isCaptainOf('id'), async (re
 // Delete team (admin only)
 router.delete('/:id', authenticate, authorize('ADMIN'), validations.uuidParam('id'), validate, async (req, res, next) => {
   try {
+    const teamId = req.params.id;
+
+    // Delete standings for this team
+    await prisma.standing.deleteMany({
+      where: { teamId }
+    });
+
+    // Delete matches where this team is home or away
+    await prisma.match.deleteMany({
+      where: {
+        OR: [
+          { homeTeamId: teamId },
+          { awayTeamId: teamId }
+        ]
+      }
+    });
+
     // Remove team reference from all members
     await prisma.user.updateMany({
-      where: { teamId: req.params.id },
+      where: { teamId },
       data: { teamId: null }
     });
 
+    // Delete the team
     await prisma.team.delete({
-      where: { id: req.params.id }
+      where: { id: teamId }
     });
 
-    await createAuditLog(req.user.id, 'TEAM_DELETED', 'Team', req.params.id, null, getClientIp(req));
+    await createAuditLog(req.user.id, 'TEAM_DELETED', 'Team', teamId, null, getClientIp(req));
 
     res.json({ message: 'Team deleted successfully' });
   } catch (error) {
